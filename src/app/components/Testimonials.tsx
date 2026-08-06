@@ -1,6 +1,5 @@
 import { Star, Quote, ChevronLeft, ChevronRight } from 'lucide-react';
-import Slider from 'react-slick';
-import { useRef } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 
 const testimonials = [
   {
@@ -48,132 +47,184 @@ const testimonials = [
 ];
 
 export function Testimonials() {
-  const sliderRef = useRef<Slider>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const total = testimonials.length;
 
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    autoplay: true,
-    autoplaySpeed: 4500,
-    pauseOnHover: true,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    arrows: false,
-    dotsClass: 'slick-dots !bottom-[-36px]',
-    responsive: [
-      { breakpoint: 1024, settings: { slidesToShow: 2 } },
-      { breakpoint: 640,  settings: { slidesToShow: 1 } },
-    ],
+  const getCardWidth = useCallback(() => {
+    const track = trackRef.current;
+    if (!track) return 0;
+    const card = track.querySelector<HTMLElement>('[data-card]');
+    return card ? card.offsetWidth + 16 : 0; // 16 = gap-4
+  }, []);
+
+  const scrollTo = useCallback((index: number) => {
+    const track = trackRef.current;
+    if (!track) return;
+    const cardW = getCardWidth();
+    track.scrollTo({ left: index * cardW, behavior: 'smooth' });
+  }, [getCardWidth]);
+
+  const prev = () => {
+    const next = Math.max(0, activeIndex - 1);
+    scrollTo(next);
   };
+
+  const next = () => {
+    const visibleCards = getVisibleCount();
+    const maxIndex = total - visibleCards;
+    const n = Math.min(maxIndex, activeIndex + 1);
+    scrollTo(n);
+  };
+
+  const getVisibleCount = () => {
+    if (typeof window === 'undefined') return 2;
+    if (window.innerWidth >= 1024) return 3;
+    return 2;
+  };
+
+  // Sync active dot on scroll
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    const handler = () => {
+      const cardW = getCardWidth();
+      if (!cardW) return;
+      setActiveIndex(Math.round(track.scrollLeft / cardW));
+    };
+    track.addEventListener('scroll', handler, { passive: true });
+    return () => track.removeEventListener('scroll', handler);
+  }, [getCardWidth]);
+
+  const visibleCount = getVisibleCount();
+  const maxIndex = Math.max(0, total - visibleCount);
 
   return (
     <section id="testimonials" className="py-12 md:py-16 lg:py-20 bg-[#f8fafc] dark:bg-[#0a0f1a]">
       <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
+
+        {/* Header */}
         <div className="text-center mb-8 md:mb-12 lg:mb-16">
           <span className="text-[#ff6b35] font-semibold text-base uppercase tracking-wider">Testimonials</span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#0f172a] dark:text-[#f1f5f9] mt-3 mb-4">
             What Our Clients Say
           </h2>
           <p className="text-base text-[#64748b] dark:text-[#94a3b8] max-w-sm mx-auto text-center">
-            Don't just take our word for it.<br className="hidden sm:block" />
+            Don't just take our word for it.{' '}
+            <br className="hidden sm:block" />
             Here's what our clients say about working with SwiftLogix.
           </p>
         </div>
 
-        {/* Prev / Next row on mobile, absolute on desktop */}
-        <div className="flex items-center justify-center gap-3 mb-4 md:hidden">
+        {/* Carousel wrapper */}
+        <div className="relative">
+
+          {/* Prev arrow — desktop only */}
           <button
-            onClick={() => sliderRef.current?.slickPrev()}
-            className="w-9 h-9 bg-white dark:bg-[#1e293b] border border-[#e2e8f0] dark:border-[#334155] rounded-full flex items-center justify-center shadow-md hover:bg-[#ff6b35] hover:border-[#ff6b35] hover:text-white transition-all"
+            onClick={prev}
+            disabled={activeIndex === 0}
+            className="hidden md:flex absolute -left-5 lg:-left-6 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white dark:bg-[#1e293b] border border-[#e2e8f0] dark:border-[#334155] rounded-full items-center justify-center shadow-md hover:bg-[#ff6b35] hover:border-[#ff6b35] hover:text-white dark:hover:bg-[#ff6b35] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+            aria-label="Previous"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+
+          {/* Next arrow — desktop only */}
+          <button
+            onClick={next}
+            disabled={activeIndex >= maxIndex}
+            className="hidden md:flex absolute -right-5 lg:-right-6 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white dark:bg-[#1e293b] border border-[#e2e8f0] dark:border-[#334155] rounded-full items-center justify-center shadow-md hover:bg-[#ff6b35] hover:border-[#ff6b35] hover:text-white dark:hover:bg-[#ff6b35] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+            aria-label="Next"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+
+          {/* Scroll track */}
+          <div
+            ref={trackRef}
+            className="flex gap-4 overflow-x-auto pb-2"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', scrollSnapType: 'x mandatory' }}
+          >
+            {testimonials.map((t) => (
+              <div
+                key={t.name}
+                data-card
+                className="shrink-0 w-[calc(50%-8px)] lg:w-[calc(33.333%-11px)]"
+                style={{ scrollSnapAlign: 'start' }}
+              >
+                <div className="bg-white dark:bg-[#1e293b] rounded-2xl p-3 sm:p-5 lg:p-6 border border-[#e2e8f0] dark:border-[#334155] hover:shadow-lg dark:hover:shadow-black/30 transition-all relative h-full">
+                  <Quote className="absolute top-4 right-4 w-8 h-8 text-[#ff6b35]/10 dark:text-[#ff6b35]/20" />
+
+                  {/* Avatar + name */}
+                  <div className="flex items-center gap-3 mb-4">
+                    <img
+                      src={t.image}
+                      alt={t.name}
+                      className="w-9 h-9 sm:w-12 sm:h-12 rounded-full object-cover flex-shrink-0 border-2 border-[#ff6b35]/20"
+                    />
+                    <div className="min-w-0">
+                      <h4 className="font-semibold text-[#0f172a] dark:text-[#f1f5f9] truncate">{t.name}</h4>
+                      <p className="text-xs text-[#64748b] dark:text-[#94a3b8] truncate">{t.role}</p>
+                    </div>
+                  </div>
+
+                  {/* Stars */}
+                  <div className="flex gap-0.5 mb-3">
+                    {[...Array(t.rating)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 text-[#f59e0b] fill-[#f59e0b]" />
+                    ))}
+                  </div>
+
+                  {/* Review text */}
+                  <p className="text-sm text-[#475569] dark:text-[#94a3b8] leading-relaxed line-clamp-4">
+                    {t.text}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Hide scrollbar in webkit */}
+          <style>{`[data-track]::-webkit-scrollbar{display:none}`}</style>
+        </div>
+
+        {/* Dots + mobile arrows */}
+        <div className="flex items-center justify-center gap-4 mt-6">
+          <button
+            onClick={prev}
+            disabled={activeIndex === 0}
+            className="md:hidden w-9 h-9 bg-white dark:bg-[#1e293b] border border-[#e2e8f0] dark:border-[#334155] rounded-full flex items-center justify-center shadow hover:bg-[#ff6b35] hover:border-[#ff6b35] hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
             aria-label="Previous"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
+
+          <div className="flex gap-2">
+            {Array.from({ length: maxIndex + 1 }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => scrollTo(i)}
+                className={`rounded-full transition-all duration-300 ${
+                  i === activeIndex
+                    ? 'w-6 h-2.5 bg-[#ff6b35]'
+                    : 'w-2.5 h-2.5 bg-[#cbd5e1] dark:bg-[#334155] hover:bg-[#ff6b35]/50'
+                }`}
+                aria-label={`Go to slide ${i + 1}`}
+              />
+            ))}
+          </div>
+
           <button
-            onClick={() => sliderRef.current?.slickNext()}
-            className="w-9 h-9 bg-white dark:bg-[#1e293b] border border-[#e2e8f0] dark:border-[#334155] rounded-full flex items-center justify-center shadow-md hover:bg-[#ff6b35] hover:border-[#ff6b35] hover:text-white transition-all"
+            onClick={next}
+            disabled={activeIndex >= maxIndex}
+            className="md:hidden w-9 h-9 bg-white dark:bg-[#1e293b] border border-[#e2e8f0] dark:border-[#334155] rounded-full flex items-center justify-center shadow hover:bg-[#ff6b35] hover:border-[#ff6b35] hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
             aria-label="Next"
           >
             <ChevronRight className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="relative pb-12">
-          {/* Desktop-only side arrows */}
-          <button
-            onClick={() => sliderRef.current?.slickPrev()}
-            className="hidden md:flex absolute -left-5 lg:-left-6 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white dark:bg-[#1e293b] border border-[#e2e8f0] dark:border-[#334155] rounded-full items-center justify-center shadow-md hover:bg-[#ff6b35] hover:border-[#ff6b35] hover:text-white dark:hover:bg-[#ff6b35] dark:hover:border-[#ff6b35] transition-all"
-            aria-label="Previous"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <button
-            onClick={() => sliderRef.current?.slickNext()}
-            className="hidden md:flex absolute -right-5 lg:-right-6 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white dark:bg-[#1e293b] border border-[#e2e8f0] dark:border-[#334155] rounded-full items-center justify-center shadow-md hover:bg-[#ff6b35] hover:border-[#ff6b35] hover:text-white dark:hover:bg-[#ff6b35] dark:hover:border-[#ff6b35] transition-all"
-            aria-label="Next"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
-
-          <Slider ref={sliderRef} {...settings}>
-            {testimonials.map((testimonial) => (
-              <div key={testimonial.name} className="px-2 md:px-3">
-                <div className="bg-white dark:bg-[#1e293b] rounded-xl md:rounded-2xl p-4 sm:p-6 md:p-8 border border-[#e2e8f0] dark:border-[#334155] hover:shadow-lg dark:hover:shadow-[#000]/30 transition-all relative h-full">
-                  <Quote className="absolute top-4 right-4 md:top-6 md:right-6 w-8 h-8 md:w-10 md:h-10 text-[#ff6b35]/10 dark:text-[#ff6b35]/20" />
-
-                  <div className="flex items-center gap-3 mb-4 md:mb-6">
-                    <img
-                      src={testimonial.image}
-                      alt={testimonial.name}
-                      className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover flex-shrink-0"
-                    />
-                    <div>
-                      <h4 className="text-base md:text-lg font-semibold text-[#0f172a] dark:text-[#f1f5f9]">{testimonial.name}</h4>
-                      <p className="text-xs md:text-sm text-[#64748b] dark:text-[#94a3b8]">{testimonial.role}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-1 mb-3 md:mb-4">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 md:w-5 md:h-5 text-[#f59e0b] fill-[#f59e0b]" />
-                    ))}
-                  </div>
-
-                  <p className="text-sm md:text-base text-[#475569] dark:text-[#94a3b8] leading-relaxed line-clamp-4">{testimonial.text}</p>
-                </div>
-              </div>
-            ))}
-          </Slider>
-        </div>
       </div>
-
-      <style>{`
-        .slick-dots li button:before {
-          color: #cbd5e1;
-          font-size: 10px;
-          opacity: 1;
-        }
-        .slick-dots li.slick-active button:before {
-          color: #ff6b35;
-          opacity: 1;
-        }
-        /* slick core */
-        .slick-slider{position:relative;display:block;box-sizing:border-box;user-select:none;touch-action:pan-y}
-        .slick-list{position:relative;overflow:hidden;display:block;margin:0;padding:0}
-        .slick-list:focus{outline:none}
-        .slick-list.dragging{cursor:pointer}
-        .slick-track{position:relative;left:0;top:0;display:flex;margin-left:auto;margin-right:auto}
-        .slick-track:before,.slick-track:after{content:"";display:table}
-        .slick-track:after{clear:both}
-        .slick-slide{display:none;float:left;height:100%;min-height:1px}
-        .slick-slide>div{height:100%}
-        .slick-initialized .slick-slide{display:block}
-        .slick-dots{position:absolute;bottom:-36px;list-style:none;display:flex!important;justify-content:center;gap:6px;padding:0;margin:0;width:100%}
-        .slick-dots li{width:10px;height:10px}
-        .slick-dots li button{font-size:0;width:10px;height:10px;padding:0;border:none;background:#cbd5e1;border-radius:50%;cursor:pointer;transition:background .2s}
-        .slick-dots li.slick-active button{background:#ff6b35}
-      `}</style>
     </section>
   );
 }

@@ -1,15 +1,11 @@
 import { CheckCircle, Download, Mail, Phone, MapPin, Package, Calendar, Truck } from 'lucide-react';
 import { Link, useLocation } from 'react-router';
-import { useRef, useState } from 'react';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import { useRef } from 'react';
 
 export function BookingConfirmationPage() {
   const location = useLocation();
   const bookingData = location.state || {};
   const receiptRef = useRef<HTMLDivElement>(null);
-  const [downloading, setDownloading] = useState(false);
-
   const bookingNumber = useRef(`BK-${Math.random().toString(36).substr(2, 9).toUpperCase()}`).current;
   const confirmationDate = new Date().toLocaleString('en-US', {
     month: 'long',
@@ -20,23 +16,30 @@ export function BookingConfirmationPage() {
     hour12: true,
   });
 
-  const handleDownload = async () => {
-    if (!receiptRef.current || downloading) return;
-    setDownloading(true);
-    try {
-      const canvas = await html2canvas(receiptRef.current, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#ffffff',
-        logging: false,
-      });
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: [canvas.width / 2, canvas.height / 2] });
-      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 2, canvas.height / 2);
-      pdf.save(`${bookingNumber}-receipt.pdf`);
-    } finally {
-      setDownloading(false);
-    }
+  const handleDownload = () => {
+    const style = document.createElement('style');
+    style.id = 'print-receipt-style';
+    style.innerHTML = `
+      @media print {
+        body > *:not(#print-receipt-root) { display: none !important; }
+        #print-receipt-root { display: block !important; position: fixed; inset: 0; background: white; z-index: 99999; padding: 24px; }
+        @page { margin: 10mm; size: A4; }
+      }
+    `;
+    document.head.appendChild(style);
+
+    const portal = document.createElement('div');
+    portal.id = 'print-receipt-root';
+    portal.style.display = 'none';
+    portal.innerHTML = receiptRef.current?.outerHTML ?? '';
+    document.body.appendChild(portal);
+
+    window.print();
+
+    setTimeout(() => {
+      document.head.removeChild(style);
+      document.body.removeChild(portal);
+    }, 1000);
   };
 
   return (
@@ -213,11 +216,10 @@ export function BookingConfirmationPage() {
         <div className="flex flex-col sm:flex-row gap-3">
           <button
             onClick={handleDownload}
-            disabled={downloading}
-            className="flex-1 px-6 py-4 bg-[#ff6b35] text-white rounded-lg hover:bg-[#ff5722] hover:shadow-lg hover:shadow-[#ff6b35]/20 transition-all flex items-center justify-center gap-2 text-sm md:text-base disabled:opacity-70 disabled:cursor-not-allowed"
+            className="flex-1 px-6 py-4 bg-[#ff6b35] text-white rounded-lg hover:bg-[#ff5722] hover:shadow-lg hover:shadow-[#ff6b35]/20 transition-all flex items-center justify-center gap-2 text-sm md:text-base"
           >
             <Download className="w-5 h-5" />
-            {downloading ? 'Generating PDF…' : 'Download Receipt'}
+            Download Receipt
           </button>
           <Link
             to="/track-shipment"

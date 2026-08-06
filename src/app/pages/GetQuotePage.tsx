@@ -1,4 +1,4 @@
-import { Package, MapPin, Calendar, DollarSign, Truck, ArrowLeft, CheckCircle } from 'lucide-react';
+import { Package, MapPin, DollarSign, Truck, ArrowLeft, CheckCircle } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 
