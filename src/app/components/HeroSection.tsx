@@ -32,7 +32,7 @@ export function HeroSection() {
           {/* Left: headline + CTAs */}
           <div className="max-w-xl">
             {/* Pill badge */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#ff6b35]/15 border border-[#ff6b35]/30 rounded-full mb-6 md:mb-8">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#ff6b35]/15 rounded-full mb-6 md:mb-8">
               <span className="w-2 h-2 bg-[#ff6b35] rounded-full animate-pulse flex-shrink-0" />
               <span className="text-[#ff6b35] text-sm font-medium">Trusted by 500+ Companies Worldwide</span>
             </div>

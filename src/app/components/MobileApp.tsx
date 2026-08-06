@@ -1,4 +1,4 @@
-import { Bell, MapPin, Package, Wifi, Battery, Signal } from 'lucide-react';
+import { Bell, MapPin, Package, Download, Wifi, Battery, Signal } from 'lucide-react';
 
 export function MobileApp() {
   const features = [

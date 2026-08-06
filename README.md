@@ -1,7 +1,7 @@
 
-  # Logistics Company Website UI
+  # SwiftLogix
 
-  This is a code bundle for Logistics Company Website UI. The original project is available at https://www.figma.com/design/ASKI44Q2JatLA1llmZNeaX/Logistics-Company-Website-UI.
+  This is a code bundle for SwiftLogix. The original project is available at https://www.figma.com/design/6e8bAWcGX1tzTrE9B5RubU/SwiftLogix.
 
   ## Running the code
 
