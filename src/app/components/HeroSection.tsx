@@ -30,27 +30,25 @@ export function HeroSection() {
         <div className="flex flex-col lg:flex-row items-start justify-between pt-28 sm:pt-32 md:pt-36 pb-10 sm:pb-52 md:pb-60">
 
           {/* Left: headline + CTAs */}
-          <div className="max-w-xl">
+          <div className="max-w-xl lg:max-w-2xl w-full lg:w-auto text-center lg:text-left">
             {/* Pill badge */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#ff6b35]/15 rounded-full mb-6 md:mb-8">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#ff6b35]/15 border border-[#ff6b35]/30 rounded-full mb-6 md:mb-8">
               <span className="w-2 h-2 bg-[#ff6b35] rounded-full animate-pulse flex-shrink-0" />
               <span className="text-[#ff6b35] text-sm font-medium">Trusted by 500+ Companies Worldwide</span>
             </div>
 
-            {/* Large stacked heading */}
-            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-[82px] font-bold text-white leading-[1.02] tracking-tight mb-6">
-              Fast,<br />
-              Reliable<br />
-              &amp; Smart<br />
-              <span className="text-[#ff6b35]">Logistics.</span>
+            {/* 2-line heading */}
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[68px] font-bold text-white leading-[1.08] tracking-tight mb-6">
+              Fast, Reliable<br />
+              <span className="text-[#ff6b35]">&amp; Smart Logistics.</span>
             </h1>
 
-            <p className="text-base md:text-lg text-gray-300 mb-8 md:mb-10 max-w-md leading-relaxed">
+            <p className="text-base md:text-lg text-gray-300 mb-8 md:mb-10 max-w-md leading-relaxed mx-auto lg:mx-0">
               Streamline your supply chain with cutting-edge delivery and warehousing services — from local last-mile to global freight forwarding.
             </p>
 
             {/* CTAs */}
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Link
                 to="/get-quote"
                 className="px-7 py-4 bg-[#ff6b35] text-white rounded-lg hover:bg-[#ff5722] hover:shadow-lg hover:shadow-[#ff6b35]/30 transition-all flex items-center justify-center gap-2 font-medium"
