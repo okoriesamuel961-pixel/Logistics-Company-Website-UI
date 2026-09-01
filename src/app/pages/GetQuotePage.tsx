@@ -160,9 +160,14 @@ export function GetQuotePage() {
                     <label className={LABEL}>Weight (kg)</label>
                     <input
                       type="number"
+                      min="0"
+                      step="0.1"
                       placeholder="e.g., 2.5"
                       value={formData.weight}
-                      onChange={(e) => updateFormData('weight', e.target.value)}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        if (v === '' || Number(v) >= 0) updateFormData('weight', v);
+                      }}
                       className={INPUT}
                     />
                   </div>
@@ -173,11 +178,15 @@ export function GetQuotePage() {
                         <input
                           key={dim}
                           type="number"
+                          min="0"
+                          step="0.1"
                           placeholder={['L', 'W', 'H'][i]}
                           value={formData.dimensions[dim]}
-                          onChange={(e) =>
-                            updateFormData('dimensions', { ...formData.dimensions, [dim]: e.target.value })
-                          }
+                          onChange={(e) => {
+                            const v = e.target.value;
+                            if (v === '' || Number(v) >= 0)
+                              updateFormData('dimensions', { ...formData.dimensions, [dim]: v });
+                          }}
                           className="px-3 py-3 md:py-4 bg-[#f8fafc] dark:bg-[#0f172a] border border-[#e2e8f0] dark:border-[#334155] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff6b35] focus:border-transparent text-sm md:text-base text-[#0f172a] dark:text-[#f1f5f9] placeholder-[#94a3b8]"
                         />
                       ))}
