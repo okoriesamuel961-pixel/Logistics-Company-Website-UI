@@ -1,4 +1,4 @@
-import { Package, Menu, X, Sun, Moon } from 'lucide-react';
+import { Menu, X, Sun, Moon } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { useTheme } from '../context/ThemeContext';
@@ -108,12 +108,9 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16 md:h-20">
 
           {/* Brand */}
-          <Link to="/" className="flex items-center gap-2.5" onClick={() => handleLinkClick('/')}>
-            <div className="w-10 h-10 bg-[#ff6b35] rounded-lg flex items-center justify-center shadow-sm">
-              <Package className="w-6 h-6 text-white" />
-            </div>
+          <Link to="/" className="flex items-center" onClick={() => handleLinkClick('/')}>
             <span className="text-xl font-bold tracking-tight text-[#0f172a] dark:text-[#f1f5f9]">
-              SwiftLogix
+              Swift<span className="text-[#ff6b35]">Logix</span>
             </span>
           </Link>
 

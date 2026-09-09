@@ -1,4 +1,4 @@
-import { Package, MapPin, Calendar, DollarSign, Truck, ArrowLeft, CheckCircle } from 'lucide-react';
+import { Package, MapPin, Calendar, DollarSign, Truck, ArrowLeft, CheckCircle, ChevronDown, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 
@@ -25,6 +25,13 @@ export function GetQuotePage() {
     phone: '',
     company: '',
   });
+
+  const [processing, setProcessing] = useState(false);
+
+  const advance = (fn: () => void) => {
+    setProcessing(true);
+    setTimeout(() => { setProcessing(false); fn(); }, 700);
+  };
 
   const [quote, setQuote] = useState<{
     baseRate: number;
@@ -142,17 +149,20 @@ export function GetQuotePage() {
 
                 <div>
                   <label className={LABEL}>Package Type</label>
-                  <select
-                    value={formData.packageType}
-                    onChange={(e) => updateFormData('packageType', e.target.value)}
-                    className={INPUT}
-                  >
-                    <option value="">Select package type</option>
-                    <option value="envelope">Envelope</option>
-                    <option value="box">Box</option>
-                    <option value="pallet">Pallet</option>
-                    <option value="custom">Custom</option>
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={formData.packageType}
+                      onChange={(e) => updateFormData('packageType', e.target.value)}
+                      className={`${INPUT} appearance-none pr-10 cursor-pointer`}
+                    >
+                      <option value="">Select package type</option>
+                      <option value="envelope">Envelope</option>
+                      <option value="box">Box</option>
+                      <option value="pallet">Pallet</option>
+                      <option value="custom">Custom</option>
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#94a3b8] pointer-events-none" />
+                  </div>
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-6">
@@ -210,11 +220,11 @@ export function GetQuotePage() {
 
               <div className="mt-8 flex justify-end">
                 <button
-                  onClick={() => setStep(2)}
-                  disabled={!formData.serviceType || !formData.packageType || !formData.weight}
-                  className="px-6 md:px-8 py-3 md:py-4 bg-[#ff6b35] text-white rounded-lg hover:bg-[#ff5722] hover:shadow-lg hover:shadow-[#ff6b35]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
+                  onClick={() => advance(() => setStep(2))}
+                  disabled={!formData.serviceType || !formData.packageType || !formData.weight || processing}
+                  className="px-6 md:px-8 py-3 md:py-4 bg-[#ff6b35] text-white rounded-lg hover:bg-[#ff5722] hover:shadow-lg hover:shadow-[#ff6b35]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base flex items-center gap-2"
                 >
-                  Continue to Locations
+                  {processing ? <><Loader2 className="w-4 h-4 animate-spin" />Processing…</> : 'Continue to Locations'}
                 </button>
               </div>
             </div>
@@ -287,7 +297,7 @@ export function GetQuotePage() {
                     type="date"
                     value={formData.shipmentDate}
                     onChange={(e) => updateFormData('shipmentDate', e.target.value)}
-                    className="w-full sm:w-auto px-4 py-3 md:py-4 bg-[#f8fafc] dark:bg-[#0f172a] border border-[#e2e8f0] dark:border-[#334155] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff6b35] focus:border-transparent text-sm md:text-base text-[#0f172a] dark:text-[#f1f5f9]"
+                    className={INPUT}
                   />
                 </div>
               </div>
@@ -300,11 +310,11 @@ export function GetQuotePage() {
                   Back
                 </button>
                 <button
-                  onClick={() => setStep(3)}
-                  disabled={!formData.originCountry || !formData.destinationCountry}
-                  className="px-6 md:px-8 py-3 md:py-4 bg-[#ff6b35] text-white rounded-lg hover:bg-[#ff5722] hover:shadow-lg hover:shadow-[#ff6b35]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
+                  onClick={() => advance(() => setStep(3))}
+                  disabled={!formData.originCountry || !formData.destinationCountry || processing}
+                  className="px-6 md:px-8 py-3 md:py-4 bg-[#ff6b35] text-white rounded-lg hover:bg-[#ff5722] hover:shadow-lg hover:shadow-[#ff6b35]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base flex items-center gap-2"
                 >
-                  Continue to Contact Details
+                  {processing ? <><Loader2 className="w-4 h-4 animate-spin" />Processing…</> : 'Continue to Contact Details'}
                 </button>
               </div>
             </div>
@@ -369,11 +379,11 @@ export function GetQuotePage() {
                   Back
                 </button>
                 <button
-                  onClick={handleGenerateQuote}
-                  disabled={!formData.name || !formData.email || !formData.phone}
-                  className="px-6 md:px-8 py-3 md:py-4 bg-[#ff6b35] text-white rounded-lg hover:bg-[#ff5722] hover:shadow-lg hover:shadow-[#ff6b35]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
+                  onClick={() => advance(handleGenerateQuote)}
+                  disabled={!formData.name || !formData.email || !formData.phone || processing}
+                  className="px-6 md:px-8 py-3 md:py-4 bg-[#ff6b35] text-white rounded-lg hover:bg-[#ff5722] hover:shadow-lg hover:shadow-[#ff6b35]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base flex items-center gap-2"
                 >
-                  Generate Quote
+                  {processing ? <><Loader2 className="w-4 h-4 animate-spin" />Generating Quote…</> : 'Generate Quote'}
                 </button>
               </div>
             </div>

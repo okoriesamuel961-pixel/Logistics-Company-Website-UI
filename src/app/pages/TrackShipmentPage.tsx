@@ -514,7 +514,7 @@ export function TrackShipmentPage() {
               </div>
               <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
                 <p className="text-sm text-gray-700 mb-3"><strong>Try a sample:</strong></p>
-                <div className="flex flex-wrap gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                   {SAMPLES.map(({ id, label, status }) => {
                     const cfg = STATUS_CONFIG[status];
                     return (
@@ -522,11 +522,11 @@ export function TrackShipmentPage() {
                         key={id}
                         type="button"
                         onClick={() => handleSample(id)}
-                        className={`flex items-center gap-2 px-3 py-1.5 bg-white border rounded-lg text-sm transition-colors hover:bg-gray-50 ${cfg.badgeBorder}`}
+                        className={`flex items-center gap-2 px-3 py-2 bg-white border rounded-lg text-sm transition-all hover:bg-gray-50 hover:shadow-sm w-full ${cfg.badgeBorder}`}
                       >
-                        <span className={`w-2 h-2 rounded-full ${cfg.dotColor}`} />
-                        <span className="text-gray-700">{label}</span>
-                        <span className={`text-xs font-medium ${cfg.badgeText}`}>
+                        <span className={`w-2 h-2 rounded-full flex-shrink-0 ${cfg.dotColor}`} />
+                        <span className="text-gray-700 font-mono text-xs flex-1 text-left truncate">{label}</span>
+                        <span className={`text-xs font-semibold flex-shrink-0 px-2 py-0.5 rounded-full ${cfg.badgeBg} ${cfg.badgeText}`}>
                           {SAMPLE_STATUS_LABELS[status]}
                         </span>
                       </button>

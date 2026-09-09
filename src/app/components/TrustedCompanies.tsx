@@ -22,10 +22,10 @@ const doubled = [...LOGOS, ...LOGOS];
 
 export function TrustedCompanies() {
   return (
-    <section className="pt-0 pb-10 bg-white dark:bg-[#0f172a] border-b border-[#e2e8f0] dark:border-[#1e293b] overflow-hidden">
-      <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 pt-8 mb-6">
-        <span className="block text-center text-[#ff6b35] font-semibold text-sm md:text-base uppercase tracking-wider">
-          Trusted by leading companies worldwide
+    <section className="py-8 bg-white dark:bg-[#0f172a] border-b border-[#e2e8f0] dark:border-[#1e293b] overflow-hidden">
+      <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 mb-6">
+        <span className="block text-center text-[#ff6b35] font-semibold text-sm md:text-base uppercase tracking-wider leading-snug">
+          Trusted by leading<br />companies worldwide
         </span>
       </div>
 

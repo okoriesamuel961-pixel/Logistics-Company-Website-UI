@@ -18,7 +18,7 @@ function AppInner() {
   const { isDark } = useTheme();
   return (
     <div className={isDark ? 'dark' : ''}>
-      <BrowserRouter basename="/">
+      <BrowserRouter basename={import.meta.env.PROD ? '/SwiftLogix/' : '/'}>
         <ScrollToTop />
         <Routes>
           <Route path="/" element={<RootLayout />}>
